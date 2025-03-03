@@ -1,16 +1,27 @@
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { LayoutDashboard, Users, CheckSquare, ListChecks, DollarSign, FileText, Users as UsersIcon, UserPlus, Shield, BarChart2, GraduationCap as Graduation } from 'lucide-react';
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  LayoutDashboard,
+  Users,
+  CheckSquare,
+  ListChecks,
+  DollarSign,
+  FileText,
+  Users as UsersIcon,
+  UserPlus,
+  Shield,
+  BarChart2,
+  GraduationCap as Graduation,
+} from "lucide-react";
 
 interface SidebarProps {
   collapsed: boolean;
 }
 
 export default function Sidebar({ collapsed }: SidebarProps) {
-  // Mock location since we're not using actual routing yet
-  const location = { pathname: '/' };
+  const location = useLocation();
 
   return (
     <aside
@@ -31,76 +42,81 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             to="/"
             icon={<LayoutDashboard className="h-4 w-4" />}
             label="Dashboard"
-            isActive={location.pathname === '/'}
+            isActive={location.pathname === "/"}
             collapsed={collapsed}
           />
           <NavItem
             to="/students"
             icon={<Users className="h-4 w-4" />}
             label="Student Management"
-            isActive={location.pathname === '/students'}
+            isActive={location.pathname === "/students"}
             collapsed={collapsed}
           />
           <NavItem
             to="/clearance"
             icon={<CheckSquare className="h-4 w-4" />}
             label="Clearance Workflow"
-            isActive={location.pathname === '/clearance'}
+            isActive={location.pathname === "/clearance"}
             collapsed={collapsed}
           />
           <NavItem
             to="/graduation-list"
             icon={<ListChecks className="h-4 w-4" />}
             label="Graduation Lists"
-            isActive={location.pathname === '/graduation-list'}
+            isActive={location.pathname === "/graduation-list"}
             collapsed={collapsed}
           />
           <NavItem
             to="/finance"
             icon={<DollarSign className="h-4 w-4" />}
             label="Finance & Payments"
-            isActive={location.pathname === '/finance'}
+            isActive={location.pathname === "/finance"}
             collapsed={collapsed}
           />
           <NavItem
             to="/documents"
             icon={<FileText className="h-4 w-4" />}
             label="Document Management"
-            isActive={location.pathname === '/documents'}
+            isActive={location.pathname === "/documents"}
             collapsed={collapsed}
           />
           <NavItem
             to="/ceremony"
             icon={<UsersIcon className="h-4 w-4" />}
             label="Ceremony Coordination"
-            isActive={location.pathname === '/ceremony'}
+            isActive={location.pathname === "/ceremony"}
             collapsed={collapsed}
           />
           <NavItem
             to="/alumni"
             icon={<UserPlus className="h-4 w-4" />}
             label="Alumni Integration"
-            isActive={location.pathname === '/alumni'}
+            isActive={location.pathname === "/alumni"}
             collapsed={collapsed}
           />
           <NavItem
             to="/admin"
             icon={<Shield className="h-4 w-4" />}
             label="System Administration"
-            isActive={location.pathname === '/admin'}
+            isActive={location.pathname === "/admin"}
             collapsed={collapsed}
           />
           <NavItem
             to="/reports"
             icon={<BarChart2 className="h-4 w-4" />}
             label="Reports & Analytics"
-            isActive={location.pathname === '/reports'}
+            isActive={location.pathname === "/reports"}
             collapsed={collapsed}
           />
         </nav>
       </ScrollArea>
       <div className="mt-auto border-t p-2">
-        <p className={cn("text-xs text-muted-foreground px-2 py-1", collapsed && "hidden")}>
+        <p
+          className={cn(
+            "text-xs text-muted-foreground px-2 py-1",
+            collapsed && "hidden"
+          )}
+        >
           © 2025 Graduation System
         </p>
       </div>

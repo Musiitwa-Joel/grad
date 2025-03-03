@@ -14,6 +14,8 @@ import Finance from "@/components/finance/FinancePayment";
 import CeremonyCoordination from "@/components/ceremony/CeremonyCoordination";
 import DocumentManagement from "@/components/documents/DocumentManagement";
 import AlumniIntegration from "@/components/alumni/AlumniIntegration";
+import SystemAdministration from "@/components/admin/SystemAdministration";
+import ReportsAnalytics from "@/components/reports/ReportsAnalytics";
 import { UserProvider } from "@/context/UserContext";
 import { StudentProvider } from "@/context/StudentContext";
 
@@ -49,6 +51,8 @@ function App() {
                   <Route path="/ceremony" element={<CeremonyCoordination />} />
                   <Route path="/documents" element={<DocumentManagement />} />
                   <Route path="/alumni" element={<AlumniIntegration />} />
+                  <Route path="/admin" element={<SystemAdministration />} />
+                  <Route path="/reports" element={<ReportsAnalytics />} />
                   {/* Other routes will be added as they are implemented */}
                   <Route path="*" element={<Dashboard />} />
                 </Routes>
