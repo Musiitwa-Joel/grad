@@ -6,6 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Dialog,
@@ -49,9 +51,205 @@ import {
   BookOpen,
   Award,
   Calendar,
+  ChevronDown,
+  ChevronRight,
+  Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { faculties, departments } from "@/data/mockData";
+import { faculties, departments, programs } from "@/data/mockData";
+import { cn } from "@/lib/utils";
+
+// Enhanced mock data for hierarchical structure
+const hierarchicalGraduationData = [
+  {
+    id: "sci",
+    name: "School of Computing & Informatics",
+    levels: [
+      {
+        id: "bachelor",
+        name: "Bachelor Level",
+        programs: [
+          {
+            id: "bscs",
+            name: "Bachelor of Science in Computer Science",
+            students: [
+              { id: "1", name: "John Smith", studentId: "STU001", gpa: "3.8" },
+              {
+                id: "2",
+                name: "Sarah Johnson",
+                studentId: "STU002",
+                gpa: "3.7",
+              },
+            ],
+          },
+          {
+            id: "bist",
+            name: "Bachelor of Information Systems Technology",
+            students: [
+              {
+                id: "3",
+                name: "Michael Brown",
+                studentId: "STU003",
+                gpa: "3.5",
+              },
+              { id: "4", name: "Emily Davis", studentId: "STU004", gpa: "3.9" },
+            ],
+          },
+          {
+            id: "cyber",
+            name: "Bachelor of Cyber Security",
+            students: [
+              {
+                id: "5",
+                name: "David Wilson",
+                studentId: "STU005",
+                gpa: "3.6",
+              },
+              {
+                id: "6",
+                name: "Jessica Martinez",
+                studentId: "STU006",
+                gpa: "3.4",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "diploma",
+        name: "Diploma Level",
+        programs: [
+          {
+            id: "dcs",
+            name: "Diploma in Computer Science",
+            students: [
+              {
+                id: "7",
+                name: "James Taylor",
+                studentId: "STU007",
+                gpa: "3.3",
+              },
+              {
+                id: "8",
+                name: "Sophia Anderson",
+                studentId: "STU008",
+                gpa: "3.5",
+              },
+            ],
+          },
+          {
+            id: "dit",
+            name: "Diploma in Information Technology",
+            students: [
+              {
+                id: "9",
+                name: "Daniel Thomas",
+                studentId: "STU009",
+                gpa: "3.2",
+              },
+              {
+                id: "10",
+                name: "Olivia Garcia",
+                studentId: "STU010",
+                gpa: "3.7",
+              },
+            ],
+          },
+          {
+            id: "dist",
+            name: "Diploma in Information Systems Technology",
+            students: [
+              {
+                id: "11",
+                name: "William Johnson",
+                studentId: "STU011",
+                gpa: "3.4",
+              },
+              {
+                id: "12",
+                name: "Emma Wilson",
+                studentId: "STU012",
+                gpa: "3.6",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "certificate",
+        name: "Certificate Level",
+        programs: [
+          {
+            id: "ncit",
+            name: "National Certificate in Information Technology",
+            students: [
+              {
+                id: "13",
+                name: "Robert Davis",
+                studentId: "STU013",
+                gpa: "3.1",
+              },
+              {
+                id: "14",
+                name: "Ava Martinez",
+                studentId: "STU014",
+                gpa: "3.3",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "sobe",
+    name: "School of Business and Economics",
+    levels: [
+      {
+        id: "bachelor",
+        name: "Bachelor Level",
+        programs: [
+          {
+            id: "bba",
+            name: "Bachelor of Business Administration",
+            students: [
+              {
+                id: "15",
+                name: "Noah Wilson",
+                studentId: "STU015",
+                gpa: "3.5",
+              },
+              {
+                id: "16",
+                name: "Isabella Thomas",
+                studentId: "STU016",
+                gpa: "3.8",
+              },
+            ],
+          },
+          {
+            id: "bcom",
+            name: "Bachelor of Commerce",
+            students: [
+              {
+                id: "17",
+                name: "Liam Johnson",
+                studentId: "STU017",
+                gpa: "3.6",
+              },
+              {
+                id: "18",
+                name: "Sophia Brown",
+                studentId: "STU018",
+                gpa: "3.7",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
 
 export default function GraduationList() {
   const { students } = useStudents();
@@ -64,6 +262,11 @@ export default function GraduationList() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [expandedSchools, setExpandedSchools] = useState<string[]>([]);
+  const [expandedLevels, setExpandedLevels] = useState<string[]>([]);
+  const [expandedPrograms, setExpandedPrograms] = useState<string[]>([]);
+  const [generatedList, setGeneratedList] = useState<any>(null);
 
   // Filter students based on search and filters
   const eligibleStudents = students.filter(
@@ -109,7 +312,8 @@ export default function GraduationList() {
     setIsGenerating(true);
     setTimeout(() => {
       setIsGenerating(false);
-      setShowConfirmation(true);
+      setGeneratedList(hierarchicalGraduationData);
+      setShowPreview(true);
     }, 1500);
   };
 
@@ -152,6 +356,43 @@ export default function GraduationList() {
       description: `${selectedStudents.length} students have been notified about their graduation status`,
     });
     setSelectedStudents([]);
+  };
+
+  const toggleSchool = (schoolId: string) => {
+    if (expandedSchools.includes(schoolId)) {
+      setExpandedSchools(expandedSchools.filter((id) => id !== schoolId));
+    } else {
+      setExpandedSchools([...expandedSchools, schoolId]);
+    }
+  };
+
+  const toggleLevel = (levelId: string, schoolId: string) => {
+    const key = `${schoolId}-${levelId}`;
+    if (expandedLevels.includes(key)) {
+      setExpandedLevels(expandedLevels.filter((id) => id !== key));
+    } else {
+      setExpandedLevels([...expandedLevels, key]);
+    }
+  };
+
+  const toggleProgram = (
+    programId: string,
+    schoolId: string,
+    levelId: string
+  ) => {
+    const key = `${schoolId}-${levelId}-${programId}`;
+    if (expandedPrograms.includes(key)) {
+      setExpandedPrograms(expandedPrograms.filter((id) => id !== key));
+    } else {
+      setExpandedPrograms([...expandedPrograms, key]);
+    }
+  };
+
+  const closePreview = () => {
+    setShowPreview(false);
+    setExpandedSchools([]);
+    setExpandedLevels([]);
+    setExpandedPrograms([]);
   };
 
   return (
@@ -475,6 +716,178 @@ export default function GraduationList() {
         </CardContent>
       </Card>
 
+      {/* Graduation List Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Graduation List Preview</DialogTitle>
+            <DialogDescription>
+              Hierarchical view of the graduation list organized by school,
+              level, and program
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">
+                Graduation List - {selectedYear}
+              </h3>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handlePrint}>
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExportPDF}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Export PDF
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-4 border rounded-md p-4">
+              {generatedList &&
+                generatedList.map((school: any) => (
+                  <div
+                    key={school.id}
+                    className="border-b pb-2 last:border-b-0 last:pb-0"
+                  >
+                    <div
+                      className="flex items-center gap-2 cursor-pointer py-2"
+                      onClick={() => toggleSchool(school.id)}
+                    >
+                      {expandedSchools.includes(school.id) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                      <h3 className="font-bold text-lg">{school.name}</h3>
+                    </div>
+
+                    {expandedSchools.includes(school.id) && (
+                      <div className="pl-6 space-y-3 mt-2">
+                        {school.levels.map((level: any) => (
+                          <div key={level.id} className="border-l-2 pl-4">
+                            <div
+                              className="flex items-center gap-2 cursor-pointer py-1"
+                              onClick={() => toggleLevel(level.id, school.id)}
+                            >
+                              {expandedLevels.includes(
+                                `${school.id}-${level.id}`
+                              ) ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                              <h4 className="font-semibold text-md">
+                                {level.name}
+                              </h4>
+                            </div>
+
+                            {expandedLevels.includes(
+                              `${school.id}-${level.id}`
+                            ) && (
+                              <div className="pl-6 space-y-3 mt-1">
+                                {level.programs.map((program: any) => (
+                                  <div
+                                    key={program.id}
+                                    className="border-l-2 pl-4"
+                                  >
+                                    <div
+                                      className="flex items-center gap-2 cursor-pointer py-1"
+                                      onClick={() =>
+                                        toggleProgram(
+                                          program.id,
+                                          school.id,
+                                          level.id
+                                        )
+                                      }
+                                    >
+                                      {expandedPrograms.includes(
+                                        `${school.id}-${level.id}-${program.id}`
+                                      ) ? (
+                                        <ChevronDown className="h-4 w-4" />
+                                      ) : (
+                                        <ChevronRight className="h-4 w-4" />
+                                      )}
+                                      <h5 className="font-medium">
+                                        {program.name}
+                                      </h5>
+                                      <Badge className="ml-2">
+                                        {program.students.length}
+                                      </Badge>
+                                    </div>
+
+                                    {expandedPrograms.includes(
+                                      `${school.id}-${level.id}-${program.id}`
+                                    ) && (
+                                      <div className="mt-2 rounded-md border">
+                                        <Table>
+                                          <TableHeader>
+                                            <TableRow>
+                                              <TableHead>Student ID</TableHead>
+                                              <TableHead>Name</TableHead>
+                                              <TableHead>GPA</TableHead>
+                                              <TableHead className="text-right">
+                                                Actions
+                                              </TableHead>
+                                            </TableRow>
+                                          </TableHeader>
+                                          <TableBody>
+                                            {program.students.map(
+                                              (student: any) => (
+                                                <TableRow key={student.id}>
+                                                  <TableCell>
+                                                    {student.studentId}
+                                                  </TableCell>
+                                                  <TableCell className="font-medium">
+                                                    {student.name}
+                                                  </TableCell>
+                                                  <TableCell>
+                                                    {student.gpa}
+                                                  </TableCell>
+                                                  <TableCell className="text-right">
+                                                    <Button
+                                                      variant="ghost"
+                                                      size="sm"
+                                                    >
+                                                      <Eye className="h-4 w-4 mr-1" />
+                                                      View
+                                                    </Button>
+                                                  </TableCell>
+                                                </TableRow>
+                                              )
+                                            )}
+                                          </TableBody>
+                                        </Table>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closePreview}>
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                closePreview();
+                setShowConfirmation(true);
+              }}
+            >
+              Proceed to Finalize
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <DialogContent>
           <DialogHeader>
@@ -568,8 +981,4 @@ function DropdownMenuItem(props: {
       {...props}
     />
   );
-}
-
-function ChevronDown(props: any) {
-  return <div {...props} />;
 }
